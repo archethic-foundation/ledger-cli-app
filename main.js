@@ -13,14 +13,53 @@ const { listen } = require("@ledgerhq/logs");
 // console.log(argv);
 const apdu_payload = "79CCB90235842588695A0B99256EB316A9E6807C8277564115FCA1A67FDA08FD0401EC530D1BBDF3B1B3E18C6E2330E5CFD1BFD88EB6D84102184CB39EC271793578B469ACBD8EB4F684C41B5DA87712A203AAA910B7964218794E3D3F343835843C44AFFE281D750E6CA526C6FC265167FE37DB9E47828BF80964DAC837E1072CA9954FF1852FF71865B9043BC117BC001C47D76A326A2A2F7CF6B16AB49E9E57F9D5E6D8E1D00D7F1B7E2F986C711DCA060005B2C8F485";
 
+const apdu_hex_payload_addr = "0401EC530D1BBDF3B1B3E18C6E2330E5CFD1BFD88EB6D84102184CB39EC271793578B469ACBD8EB4F684C41B5DA87712A203AAA910B7964218794E3D3F343835843C44AFFE281D750E6CA526C6FC265167FE37DB9E47828BF80964DAC837E1072CA9954FF1852FF71865B9043BC117BC001C47D76A326A2A2F7CF6B16AB49E9E57F9D5E6D8E1D00D7F1B7E2F986C711DCA060005B2C8F485"
+
+const sendGetAppVersion = () => {
+    TransportNodeHid.open("")
+        .then(async (transport) => {
+            listen(log => console.log)
+            let res = await transport.send(0xe0, 0x01, 0, 0);
+            console.log("Response for Get Application Version", res);
+            const verArr = res.toString("hex").slice(0, -4).split("");
+            console.log(verArr)
+            var versionStr = "";
+            for(let i =0; i < verArr.length; i+=2){
+                versionStr += verArr[i]+ verArr[i+1]+ "."
+            }
+            console.log("Current Installed Device Version :" ,versionStr.slice(0, -1));
+        })
+}
+
+const sendGetPubKey = () => {
+    TransportNodeHid.open("")
+        .then(async (transport) => {
+            listen(log => console.log)
+            let res = await transport.send(0xe0, 0x02, 0, 0);
+            console.log("Response for Get Pubkey", res);
+            console.log(res.toString("hex"))
+        })
+}
+
+const sendGetArchAddress = (payload) => {
+    TransportNodeHid.open("")
+        .then(async (transport) => {
+            listen(log => console.log)
+            console.log(transport.device);
+            let res = await transport.send(0xe0, 0x04, 0, 0, Buffer.from(payload, "hex"));
+            console.log("Response for Get Arch Address", res);
+            console.log(res.toString("hex"))
+        })
+}
+
 const sendSignTxn = (payload) => {
     TransportNodeHid.open("")
-    .then(async (transport) => {
-      listen(log => console.log(log))
-      console.log(transport.deviceModel)
-      let res = await transport.send(0xe0, 0x08, 0, 0, Buffer.from(apdu_payload, "hex"))
-      console.log(res)
-    })
+        .then(async (transport) => {
+            listen(log => console.log(log))
+            console.log(transport.deviceModel)
+            let res = await transport.send(0xe0, 0x08, 0, 0, Buffer.from(payload, "hex"))
+            console.log(res.toString("hex"))
+        })
 }
 
 
@@ -41,28 +80,36 @@ yargs.command({
 })
 
 yargs.command({
+    command: 'getAppVersion',
+    describe: 'Get the version for the Ledger Application',
+    handler: function (argv) {
+        sendGetAppVersion()
+    }
+})
+
+yargs.command({
+    command: 'getPublicKey',
+    describe: 'Get the PublicKey of the Ledger Device',
+    handler: function (argv) {
+        sendGetPubKey()
+    }   
+})
+
+yargs.command({
+    command: 'getArchAddress',
+    describe: 'Get the Archethic Address from the Ledger Device',
+    handler: function (argv) {
+        sendGetArchAddress(apdu_hex_payload_addr);
+    }   
+})
+
+yargs.command({
     
-    command: 'generate-address',
-    describe: 'Generate Address',
-    builder: {
-        seed: {
-            describe: 'Seed',
-            demandOption: true,  // Required
-            type: 'string'     
-        },
-        index: {
-            describe: 'Index',
-            demandOption: true,  // Required
-            type: 'number'     
-        }
-       
-    },
-    
-    handler: function (argv)
-    {   
-       
+    command: 'sendTxn',
+    describe: 'Send Transaction APDU Payload to the ledger.',
+    builder: { },
+    handler: function (argv) {   
         sendSignTxn(apdu_payload)
-    
     }
 })
 
