@@ -3,67 +3,31 @@
 const yargs = require('yargs')
 const chalk = require('chalk');
 var figlet = require('figlet');
-const TransportNodeHid = require("@ledgerhq/hw-transport-node-hid").default;
-const { listen } = require("@ledgerhq/logs");
 
+// const {
+//     sendGetPubKey,
+//     sendGetAppVersion,
+//     sendGetArchAddress,
+//     sendSignTxn
+//  } = require("./lib/handler");
+
+ const { ArchethicHandler } = require('./lib/handler');
 
 // const { hideBin } = require('yargs/helpers')
 // const argv = yargs(hideBin(process.argv)).argv
 
-// console.log(argv);
-const apdu_payload = "79CCB90235842588695A0B99256EB316A9E6807C8277564115FCA1A67FDA08FD0401EC530D1BBDF3B1B3E18C6E2330E5CFD1BFD88EB6D84102184CB39EC271793578B469ACBD8EB4F684C41B5DA87712A203AAA910B7964218794E3D3F343835843C44AFFE281D750E6CA526C6FC265167FE37DB9E47828BF80964DAC837E1072CA9954FF1852FF71865B9043BC117BC001C47D76A326A2A2F7CF6B16AB49E9E57F9D5E6D8E1D00D7F1B7E2F986C711DCA060005B2C8F485";
+encrypted_key_plus_wallet = "0401EC530D1BBDF3B1B3E18C6E2330E5CFD1BFD88EB6D84102184CB39EC271793578B469ACBD8EB4F684C41B5DA87712A203AAA910B7964218794E3D3F343835843C44AFFE281D750E6CA526C6FC265167FE37DB9E47828BF80964DAC837E1072CA9954FF1852FF71865B9043BC117BC001C47D76A326A2A2F7CF6B16AB49E9E57F9D5E6D8E1D00D7F1B7E2F986C711DCA060005B2C8F485"
+address_index = "00000000"
+receiver = "020019CA33A6CA9E69B5C29E6E8497CC5AC9675952F847347709AD39C92C1B1B5313"
+amount = "1122334455667788"
 
-const apdu_hex_payload_addr = "0401EC530D1BBDF3B1B3E18C6E2330E5CFD1BFD88EB6D84102184CB39EC271793578B469ACBD8EB4F684C41B5DA87712A203AAA910B7964218794E3D3F343835843C44AFFE281D750E6CA526C6FC265167FE37DB9E47828BF80964DAC837E1072CA9954FF1852FF71865B9043BC117BC001C47D76A326A2A2F7CF6B16AB49E9E57F9D5E6D8E1D00D7F1B7E2F986C711DCA060005B2C8F485"
+// Address APDU
+const apdu_hex_payload_addr = address_index + encrypted_key_plus_wallet
 
-const sendGetAppVersion = () => {
-    TransportNodeHid.open("")
-        .then(async (transport) => {
-            listen(log => console.log)
-            let res = await transport.send(0xe0, 0x01, 0, 0);
-            console.log("Response for Get Application Version", res);
-            const verArr = res.toString("hex").slice(0, -4).split("");
-            console.log(verArr)
-            var versionStr = "";
-            for(let i =0; i < verArr.length; i+=2){
-                versionStr += verArr[i]+ verArr[i+1]+ "."
-            }
-            console.log("Current Installed Device Version :" ,versionStr.slice(0, -1));
-        })
-}
+// Sign APDU
+const apdu_hex_payload = address_index + amount + receiver + encrypted_key_plus_wallet
 
-const sendGetPubKey = () => {
-    TransportNodeHid.open("")
-        .then(async (transport) => {
-            listen(log => console.log)
-            let res = await transport.send(0xe0, 0x02, 0, 0);
-            console.log("Response for Get Pubkey", res);
-            console.log(res.toString("hex"))
-        })
-}
-
-const sendGetArchAddress = (payload) => {
-    TransportNodeHid.open("")
-        .then(async (transport) => {
-            listen(log => console.log)
-            console.log(transport.device);
-            let res = await transport.send(0xe0, 0x04, 0, 0, Buffer.from(payload, "hex"));
-            console.log("Response for Get Arch Address", res);
-            console.log(res.toString("hex"))
-        })
-}
-
-const sendSignTxn = (payload) => {
-    TransportNodeHid.open("")
-        .then(async (transport) => {
-            listen(log => console.log(log))
-            console.log(transport.deviceModel)
-            let res = await transport.send(0xe0, 0x08, 0, 0, Buffer.from(payload, "hex"))
-            console.log(res.toString("hex"))
-        })
-}
-
-
-
+const mainInstance = new ArchethicHandler();
 
 yargs.command({
     command: 'about',
@@ -71,11 +35,22 @@ yargs.command({
 
     handler: function (argv)
     {   
-        console.log(chalk.green('\n','Hello and Welcome to Archethic Ledger CLI !','\n'))
+        console.log(chalk.green('\n','Welcome to Archethic Ledger CLI !','\n'))
         console.log(chalk.blue(figlet.textSync('AE Ledger CLI',{font : "Alligator2"})))
         console.log(chalk.green('\n','Send Transactions to Archethic'))
         console.log(chalk.green('\n','Version - 1.0.0','\n'))
+
+        console.log(chalk.greenBright("Available Commands: \n Use it as ledger_cli `command`"))
+        console.log(chalk.cyan(" 1. getAppDetails \n 2. getAppVersion \n 3. getPublicKey \n 4. getArchAddress \n 5. sendTxn"))
         
+    }
+})
+
+yargs.command({
+    command: 'getAppDetails',
+    describe: 'Get the version and name for the Ledger Application',
+    handler: function (argv) {
+        mainInstance.sendGetAppAndVersion()
     }
 })
 
@@ -83,7 +58,7 @@ yargs.command({
     command: 'getAppVersion',
     describe: 'Get the version for the Ledger Application',
     handler: function (argv) {
-        sendGetAppVersion()
+        mainInstance.sendGetAppVersion()
     }
 })
 
@@ -91,7 +66,7 @@ yargs.command({
     command: 'getPublicKey',
     describe: 'Get the PublicKey of the Ledger Device',
     handler: function (argv) {
-        sendGetPubKey()
+        mainInstance.sendGetPubKey()
     }   
 })
 
@@ -99,17 +74,16 @@ yargs.command({
     command: 'getArchAddress',
     describe: 'Get the Archethic Address from the Ledger Device',
     handler: function (argv) {
-        sendGetArchAddress(apdu_hex_payload_addr);
+        mainInstance.sendGetArchAddress(apdu_hex_payload_addr);
     }   
 })
 
 yargs.command({
-    
     command: 'sendTxn',
     describe: 'Send Transaction APDU Payload to the ledger.',
     builder: { },
     handler: function (argv) {   
-        sendSignTxn(apdu_payload)
+        mainInstance.sendSignTxn(apdu_hex_payload)
     }
 })
 
