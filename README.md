@@ -1,4 +1,4 @@
-# ALCA: archethic Ledger CLI App
+# ALCA: Archethic Ledger CLI App
 
 ## Instructions to Run
 
