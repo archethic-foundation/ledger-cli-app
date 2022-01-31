@@ -12,7 +12,6 @@ var figlet = require('figlet');
 //  } = require("./lib/handler");
 
  const { ArchethicHandler } = require('./lib/handler');
- const archethic = require('archethic')
 
 // const { hideBin } = require('yargs/helpers')
 // const argv = yargs(hideBin(process.argv)).argv
@@ -30,10 +29,6 @@ const apdu_hex_payload = address_index + receiver + amount + encrypted_key_plus_
 
 const mainInstance = new ArchethicHandler();
 
-const txnBuilder = archethic.newTransactionBuilder("transfer");
-        txnBuilder.addUCOTransfer(receiver, 10.0)
-
-// console.log(txnBuilder.originSignaturePayload())
 
 yargs.command({
     command: 'about',
@@ -89,7 +84,7 @@ yargs.command({
     describe: 'Send Transaction APDU Payload to the ledger.',
     builder: { },
     handler: function (argv) {   
-        mainInstance.sendSignTxn(apdu_hex_payload)
+        mainInstance.sendSignTxn(apdu_hex_payload, receiver)
     }
 })
 
