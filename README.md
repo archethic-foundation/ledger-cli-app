@@ -15,9 +15,11 @@
 + For `address_index` please check file named `config.json` in `YOUR_HOME_PATH/.alca/config.json`
 
 ## If any Error 
+- Archethic version > +1.3.3
 - Make sure that archethic/lib/transaction_builder have following functions
 
-- setPreviousSignatureAndPreviousPublicKey(prevSign, prevPubKey) {
+- ```js 
+  setPreviousSignatureAndPreviousPublicKey(prevSign, prevPubKey) {
     if (typeof(prevSign) == "string") {
       if (!isHex(prevSign)) {
         throw "'previous Signature' must be in hexadecimal form if it's string"
@@ -33,8 +35,10 @@
     this.previousSignature = hexToUint8Array(prevSign);
     return this
   }
+  ```
 
-- setAddress(addr) {
+- ```js
+  setAddress(addr) {
     if (typeof(addr) !== "string" && !(addr instanceof Uint8Array)) {
       throw "'addr' must be a string or Uint8Array"
     }
@@ -48,3 +52,4 @@
     this.address = addr;
     return this
   }
+  ```

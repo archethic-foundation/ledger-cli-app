@@ -9,7 +9,7 @@
   "keywords": [],
   "preferGlobal": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "start": "node main.js"
   },
   "author": "",
@@ -20,5 +20,8 @@
     "chalk": "^4.1.2",
     "figlet": "^1.5.2",
     "yargs": "^17.3.0"
+  },
+  "devDependencies": {
+    "mocha": "^9.2.0"
   }
 }
