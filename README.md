@@ -9,7 +9,7 @@
 
 ## Usage Example
 + ledger_cli getArchAddress
-+ ledger_cli sendTxn --amount 47.00 --reciever 0200E49887E794D068C79D0D779F16D3B9D879EC007BE8FA4959CCE3450BE6DB859D
++ ledger_cli sendTxn --amount 47.00 --receiver 0200E49887E794D068C79D0D779F16D3B9D879EC007BE8FA4959CCE3450BE6DB859D
 
 ## Additional Info
 + For `address_index` please check file named `config.json` in `YOUR_HOME_PATH/.alca/config.json`
