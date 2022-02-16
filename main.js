@@ -115,7 +115,7 @@ yargs.command({
             type: 'string'
         },
         receiver: {
-            describe: 'Address of receiver to recieve UCOs. (68 hex characters) Add 02 in front of address if you are using ARCHEthic wallet Address.',
+            describe: 'Address of receiver to receive UCOs. (68 hex characters) Add 02 in front of address if you are using ARCHEthic wallet Address.',
             demandOption: true, // Required
             type: 'string'
         }
