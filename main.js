@@ -114,8 +114,8 @@ yargs.command({
             demandOption: true, // Required
             type: 'string'
         },
-        reciever: {
-            describe: 'Address of reciever to recieve UCOs. (68 hex characters) Add 02 in front of address if you are using ARCHEthic wallet Address.',
+        receiver: {
+            describe: 'Address of receiver to receive UCOs. (68 hex characters) Add 02 in front of address if you are using ARCHEthic wallet Address.',
             demandOption: true, // Required
             type: 'string'
         }
@@ -126,10 +126,10 @@ yargs.command({
             mainInstance.setEndPoint(argv.endpoint);
             if(contents.hasOwnProperty("ADDRESS_INDEX")) {
                 
-                mainInstance.sendSignTxn(contents["ADDRESS_INDEX"], argv.reciever, argv.amount, encrypted_key_plus_wallet);
+                mainInstance.sendSignTxn(contents["ADDRESS_INDEX"], argv.receiver, argv.amount, encrypted_key_plus_wallet);
             } else {
                 console.log("Config File have no ADDRESS_INDEX. Starting from ADDRESS_INDEX = 0");
-                mainInstance.sendSignTxn(null, argv.reciever, argv.amount, encrypted_key_plus_wallet);
+                mainInstance.sendSignTxn(null, argv.receiver, argv.amount, encrypted_key_plus_wallet);
             }
             
         } else {
